@@ -17,9 +17,14 @@ func main() {
 	}
 	fmt.Printf("%s", bytes)
 
-	versions := []string{"HEAD"}
-	err = json.NewEncoder(os.Stdout).Encode(versions)
-	if err != nil {
-		log.Fatalf("encoding error: %s", err)
-	}
+	versions := []string{"https://github.com/tmukherjee13/go-concourse", "https://github.com/tmukherjee13/yii2-reverse-migration"}
+	// err = json.NewEncoder(os.Stdout).Encode(versions)
+	// if err != nil {
+	// 	log.Fatalf("encoding error: %s", err)
+	// }
+
+	file, _ := os.OpenFile("my-data/repos.json", os.O_CREATE, os.ModePerm)
+	defer file.Close()
+	encoder := json.NewEncoder(file)
+	encoder.Encode(versions)
 }
