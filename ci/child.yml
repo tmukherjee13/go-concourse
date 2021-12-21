@@ -19,8 +19,6 @@ jobs:
         inputs:
           - name: repo
         run:
-          path: /bin/sh
+          path: echo
           args:
-            - -e
-            - |
-              echo "running some tests for ((git_repo))!"
+            - "running some tests for ((git_repo))!"

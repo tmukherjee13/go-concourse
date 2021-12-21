@@ -8,6 +8,11 @@ import (
 	"path/filepath"
 )
 
+type Data struct {
+	Url  string
+	Name string
+}
+
 type Response struct {
 	Url    string
 	Commit string
@@ -34,8 +39,15 @@ func main() {
 		log.Fatal("unable to create directory")
 	}
 
-	outData := []string{
-		"https://github.com/tmukherjee13/yii2-reverse-migration",
+	outData := []Data{
+		{
+			Url:  "https://github.com/tmukherjee13/yii2-reverse-migration",
+			Name: "yii2-reverse-migration",
+		},
+		{
+			Url:  "https://github.com/tmukherjee13/yii2-event-handler",
+			Name: "yii2-event-handler",
+		},
 	}
 	versions := &InResponse{
 		Version: Response{
