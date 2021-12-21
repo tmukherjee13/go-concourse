@@ -5,21 +5,22 @@ resources:
       uri: ((git_repo))
       # branch: ((branch))
 
-  - name: test
-    plan:
-      - get: repo
-        trigger: true
-      - task: unit-test
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source: {repository: alpine}
-          inputs:
-            - name: repo
-          run:
-            path: /bin/sh
-            args:
-              - -e
-              - |
-                echo "running some tests for ((git_repo))!"
+jobs:
+- name: test
+  plan:
+    - get: repo
+      trigger: true
+    - task: unit-test
+      config:
+        platform: linux
+        image_resource:
+          type: registry-image
+          source: {repository: alpine}
+        inputs:
+          - name: repo
+        run:
+          path: /bin/sh
+          args:
+            - -e
+            - |
+              echo "running some tests for ((git_repo))!"

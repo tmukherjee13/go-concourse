@@ -6,6 +6,6 @@ RUN go build -o /go/src/build/check ./cmd/check && \
     go build -o /go/src/build/out ./cmd/out
 
 FROM alpine:3.15
-COPY --from=builder /go/src/build/ /opt/resources/
+COPY --from=builder /go/src/build/ /opt/resource/
 
 

@@ -2,26 +2,57 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 )
 
+type Response struct {
+	Url    string
+	Commit string
+}
+
+type InResponse struct {
+	Version Response `json:"version"`
+}
+
 func main() {
-	bytes, err := ioutil.ReadAll(os.Stdin)
+	_, err := ioutil.ReadAll(os.Stdin)
 
 	if err != nil {
 		log.Fatal("Error reading from stdin: ", err)
 	}
-	fmt.Printf("%s", bytes)
 
-	versions := []string{"https://github.com/tmukherjee13/go-concourse", "https://github.com/tmukherjee13/yii2-reverse-migration"}
+	if len(os.Args) < 2 {
+		log.Fatal("incomplete list of argumetns")
+	}
 
-	file, _ := os.OpenFile("my-resource/repos.json", os.O_CREATE, os.ModePerm)
-	defer file.Close()
-	encoder := json.NewEncoder(file)
-	encoder.Encode(versions)
+	destDir := os.Args[1]
+	err = os.MkdirAll(destDir, 0755)
+	if err != nil {
+		log.Fatal("unable to create directory")
+	}
+
+	outData := []string{
+		"https://github.com/tmukherjee13/yii2-reverse-migration",
+	}
+	versions := &InResponse{
+		Version: Response{
+			Url:    "https://github.com/tmukherjee13/yii2-reverse-migration",
+			Commit: "abc",
+		},
+	}
+
+	data, err := json.Marshal(outData)
+
+	// file, _ := os.OpenFile("my-resource/repos.json", os.O_CREATE, os.ModePerm)
+	// defer file.Close()
+	// encoder := json.NewEncoder(file)
+	// encoder.Encode(versions)
+
+	destFile := filepath.Join(destDir, "repos.json")
+	ioutil.WriteFile(destFile, data, 0755)
 
 	err = json.NewEncoder(os.Stdout).Encode(versions)
 	if err != nil {
