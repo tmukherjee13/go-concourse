@@ -23,7 +23,7 @@ func main() {
 	// 	log.Fatalf("encoding error: %s", err)
 	// }
 
-	file, _ := os.OpenFile("my-resource/repos.json", os.O_CREATE, os.ModePerm)
+	file, _ := os.OpenFile("repos.json", os.O_CREATE, os.ModePerm)
 	defer file.Close()
 	encoder := json.NewEncoder(file)
 	encoder.Encode(versions)
