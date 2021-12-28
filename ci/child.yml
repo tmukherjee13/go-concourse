@@ -5,6 +5,16 @@ resources:
       uri: ((git_repo))
       # branch: ((branch))
 
+  - name: simple-image
+    type: registry-image
+    icon: docker
+    source:
+      tag: latest
+      repository: tmukherjee13/simple-image
+      username: tmukherjee13
+      password: 4e2684f4-9ff9-48e4-87cb-f464b4d9d211
+
+
 jobs:
 - name: test
   plan:
@@ -22,3 +32,27 @@ jobs:
           path: echo
           args:
             - "running some tests for ((git_repo))!"
+
+- name: build-and-push
+  plan:
+  - get: repo
+    passed: [test]
+  - task: build-task-image
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: concourse/oci-build-task
+      inputs:
+      - name: repo
+      outputs:
+      - name: image
+      params:
+        CONTEXT: repo
+      run:
+        path: build
+  - put: simple-image
+    params:
+      image: image/image.tar
