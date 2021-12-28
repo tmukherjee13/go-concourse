@@ -32,7 +32,7 @@ jobs:
         run:
           path: echo
           args:
-            - "running some tests for ((git_repo))!"
+            - "running some tests for ((git_repo))"
 
 - name: build-and-push
   plan:
