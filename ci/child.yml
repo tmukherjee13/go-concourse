@@ -37,6 +37,7 @@ jobs:
   plan:
   - get: repo
     passed: [test]
+    trigger:  true
   - task: build-task-image
     privileged: true
     config:
