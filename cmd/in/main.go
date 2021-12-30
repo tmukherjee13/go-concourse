@@ -48,8 +48,10 @@ func main() {
 	yaml.Unmarshal(body, &manifest)
 
 	var versions []models.Version
+	var version models.Version
 	for _, repo := range manifest.Repos {
-		versions = append(versions, models.Version{Url: repo.Url, Name: repo.Name})
+		version = models.Version{Url: repo.Url, Name: repo.Name}
+		versions = append(versions, version)
 	}
 
 	// file, _ := os.OpenFile("my-resource/repos.json", os.O_CREATE, os.ModePerm)
@@ -61,7 +63,7 @@ func main() {
 	destFile := filepath.Join(destDir, "repos.json")
 	ioutil.WriteFile(destFile, data, 0755)
 
-	err = json.NewEncoder(os.Stdout).Encode(versions)
+	err = json.NewEncoder(os.Stdout).Encode(models.Out{Version: version})
 	if err != nil {
 		log.Fatalf("encoding error: %s", err)
 	}

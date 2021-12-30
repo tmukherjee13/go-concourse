@@ -21,3 +21,7 @@ type SourceIn struct {
 type Source struct {
 	Uri string `json:"uri"`
 }
+
+type Out struct {
+	Version Version `json:"version"`
+}
