@@ -2,28 +2,19 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/tmukherjee13/go-concourse/models"
+	"gopkg.in/yaml.v2"
 )
 
-type Data struct {
-	Url  string
-	Name string
-}
-
-type Response struct {
-	Url    string
-	Commit string
-}
-
-type InResponse struct {
-	Version Response `json:"version"`
-}
-
 func main() {
-	_, err := ioutil.ReadAll(os.Stdin)
+	in, err := ioutil.ReadAll(os.Stdin)
 
 	if err != nil {
 		log.Fatal("Error reading from stdin: ", err)
@@ -33,36 +24,40 @@ func main() {
 		log.Fatal("incomplete list of argumetns")
 	}
 
+	var input models.SourceIn
+	json.Unmarshal(in, &input)
+
 	destDir := os.Args[1]
 	err = os.MkdirAll(destDir, 0755)
 	if err != nil {
 		log.Fatal("unable to create directory")
 	}
 
-	outData := []Data{
-		{
-			Url:  "https://github.com/tmukherjee13/yii2-reverse-migration",
-			Name: "yii2-reverse-migration",
-		},
-		{
-			Url:  "https://github.com/tmukherjee13/yii2-event-handler",
-			Name: "yii2-event-handler",
-		},
+	// Read manifest file
+	resp, err := http.Get(fmt.Sprintf("%s/raw/master/manifest.yml", input.Source.Uri))
+	if err != nil {
+		log.Fatal("Error reading manifest file: ", err)
 	}
-	versions := &InResponse{
-		Version: Response{
-			Url:    "https://github.com/tmukherjee13/yii2-reverse-migration",
-			Commit: "abc",
-		},
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal("Error reading manifest file: ", err)
 	}
 
-	data, err := json.Marshal(outData)
+	var manifest models.Manifest
+	yaml.Unmarshal(body, &manifest)
+
+	var versions []models.Version
+	for _, repo := range manifest.Repos {
+		versions = append(versions, models.Version{Url: repo.Url, Name: repo.Name})
+	}
 
 	// file, _ := os.OpenFile("my-resource/repos.json", os.O_CREATE, os.ModePerm)
 	// defer file.Close()
 	// encoder := json.NewEncoder(file)
 	// encoder.Encode(versions)
 
+	data, _ := json.Marshal(versions)
 	destFile := filepath.Join(destDir, "repos.json")
 	ioutil.WriteFile(destFile, data, 0755)
 
