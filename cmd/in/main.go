@@ -50,7 +50,7 @@ func main() {
 	var versions []models.Version
 	var version models.Version
 	for _, repo := range manifest.Repos {
-		version = models.Version{Url: repo.Url, Name: repo.Name}
+		version = models.Version(repo)
 		versions = append(versions, version)
 	}
 
